@@ -1,0 +1,20 @@
+{
+  "regular": {
+    "name": "Regime Regular",
+    "repository": "https://github.com/ReceitaFederal/calculadora-rtc-regime-regular",
+    "tag": "1.7.2",
+    "commit": "32df7196356e81f2df08e6023fc2b6dbc48036d3"
+  },
+  "simples": {
+    "name": "Simples Nacional",
+    "repository": "https://github.com/ReceitaFederal/calculadora-rtc-simples-nacional",
+    "tag": "1.0.2",
+    "commit": "f90b6525e6d5823e784baecfc6fef0ad2f04b74f"
+  },
+  "danfse": {
+    "name": "Gerador DANFSe",
+    "repository": "https://github.com/ReceitaFederal/calculadora-rtc-gerador-danfse",
+    "tag": "1.0.0",
+    "commit": "8d79e6b2f7fad6375340afcb51c85ed370c64a14"
+  }
+}

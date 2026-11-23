@@ -1,0 +1,23 @@
+# Static configuration. Routing comes from Docker labels (see docker-compose.yml).
+api:
+  dashboard: true
+  insecure: false        # dashboard is served by an explicit router on the loopback-only entrypoint
+
+ping:
+  entryPoint: dashboard  # used by the container healthcheck (traefik healthcheck --ping)
+
+entryPoints:
+  web:
+    address: ":80"
+  dashboard:
+    address: ":8080"
+
+providers:
+  docker:
+    exposedByDefault: false   # only containers with traefik.enable=true are routed
+    network: rtc-net
+    watch: true
+
+log:
+  level: INFO
+accessLog: {}

@@ -1,0 +1,15 @@
+{
+  "name": "rtc-lab-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "integration": "vitest run --config vitest.config.ts",
+    "e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.1"
+  }
+}

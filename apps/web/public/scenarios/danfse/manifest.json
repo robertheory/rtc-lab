@@ -1,0 +1,110 @@
+{
+  "engine": "danfse",
+  "basePath": "/api/danfse",
+  "scenarios": [
+    {
+      "id": "nfse-simples",
+      "name": "NFS-e simples",
+      "description": "NFS-e sem o grupo IBS/CBS.",
+      "category": "basico",
+      "method": "POST",
+      "endpoint": "/api/danfse",
+      "contentType": "application/xml",
+      "payload": "nfse-simples.xml",
+      "query": {
+        "stc": "0",
+        "canhoto": "true"
+      },
+      "explanation": "XML de NFS-e nacional sem IBS/CBS. Gera o DANFSe normal com canhoto.",
+      "expected": {
+        "status": 200,
+        "contentType": "application/pdf",
+        "summary": "PDF do DANFSe."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/xml/nfse/valido/nota/nfse_valido_sem_IBSCBS.xml",
+        "note": "XML de teste do regime regular, aceito pelo XSD (validate) e pelo gerador de DANFSe."
+      }
+    },
+    {
+      "id": "nfse-completa",
+      "name": "NFS-e com mais informações",
+      "description": "NFS-e com o grupo IBS/CBS preenchido.",
+      "category": "completo",
+      "method": "POST",
+      "endpoint": "/api/danfse",
+      "contentType": "application/xml",
+      "payload": "nfse-completa.xml",
+      "query": {
+        "stc": "0",
+        "canhoto": "true"
+      },
+      "explanation": "XML mais completo, incluindo os totais de IBS e CBS. O DANFSe traz esses blocos.",
+      "expected": {
+        "status": 200,
+        "contentType": "application/pdf",
+        "summary": "PDF do DANFSe com IBS/CBS."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/xml/nfse/valido/nota/nfse_valido_com_IBSCBS.xml",
+        "note": "XML de teste do regime regular, aceito pelo XSD (validate) e pelo gerador de DANFSe."
+      }
+    },
+    {
+      "id": "nfse-cancelada",
+      "name": "NFS-e cancelada, sem canhoto",
+      "description": "Mesmo XML com situação cancelada e canhoto oculto.",
+      "category": "situacao",
+      "method": "POST",
+      "endpoint": "/api/danfse",
+      "contentType": "application/xml",
+      "payload": "nfse-completa.xml",
+      "query": {
+        "stc": "2",
+        "canhoto": "false"
+      },
+      "explanation": "stc=2 marca o documento com a marca d'água CANCELADA. canhoto=false remove o canhoto.",
+      "expected": {
+        "status": 200,
+        "contentType": "application/pdf",
+        "summary": "PDF com marca d'água CANCELADA."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/xml/nfse/valido/nota/nfse_valido_com_IBSCBS.xml",
+        "note": "XML de teste do regime regular, aceito pelo XSD (validate) e pelo gerador de DANFSe."
+      }
+    },
+    {
+      "id": "nfse-substituida",
+      "name": "NFS-e substituída",
+      "description": "Situação substituída (stc=1).",
+      "category": "situacao",
+      "method": "POST",
+      "endpoint": "/api/danfse",
+      "contentType": "application/xml",
+      "payload": "nfse-simples.xml",
+      "query": {
+        "stc": "1",
+        "canhoto": "true"
+      },
+      "explanation": "stc=1 marca o documento com a marca d'água SUBSTITUÍDA.",
+      "expected": {
+        "status": 200,
+        "contentType": "application/pdf",
+        "summary": "PDF com marca d'água SUBSTITUÍDA."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/xml/nfse/valido/nota/nfse_valido_sem_IBSCBS.xml",
+        "note": "XML de teste do regime regular, aceito pelo XSD (validate) e pelo gerador de DANFSe."
+      }
+    }
+  ]
+}

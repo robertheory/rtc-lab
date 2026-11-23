@@ -1,0 +1,42 @@
+{
+  "id": "op-3",
+  "versao": "3.0.0",
+  "data": "2027-03-15",
+  "tpDoc": "55",
+  "CRT": "1",
+  "aliquotasEfetivas": {
+    "fatorR": false,
+    "impedimentoSublimite": false,
+    "anexoI": {
+      "pCBSSN": "1.1612",
+      "pIBSSN": "0.0129"
+    },
+    "anexoII": {
+      "pCBSSN": "1.2000",
+      "pIBSSN": "0.0130"
+    }
+  },
+  "itens": [
+    {
+      "numero": 1,
+      "cAtivSN": "01",
+      "cClassTrib": "000001",
+      "baseCalculo": "1000.00",
+      "valorImpostoSeletivo": "0.00"
+    },
+    {
+      "numero": 2,
+      "cAtivSN": "01",
+      "cClassTrib": "000001",
+      "baseCalculo": "250.50",
+      "valorImpostoSeletivo": "0.00"
+    },
+    {
+      "numero": 3,
+      "cAtivSN": "03",
+      "cClassTrib": "000001",
+      "baseCalculo": "480.00",
+      "valorImpostoSeletivo": "0.00"
+    }
+  ]
+}

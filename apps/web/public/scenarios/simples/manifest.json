@@ -1,0 +1,173 @@
+{
+  "engine": "simples",
+  "basePath": "/api/simples",
+  "scenarios": [
+    {
+      "id": "nfe-basica",
+      "name": "NF-e básica",
+      "description": "Revenda de mercadorias (atividade 01) no Anexo I.",
+      "category": "basico",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "nfe-basica.json",
+      "explanation": "Exemplo oficial de NF-e (tpDoc 55, CRT 1): alíquotas efetivas do Anexo I informadas pelo contribuinte e cálculo de CBS e IBS por item.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "CALCULADO"
+        ],
+        "summary": "Item calculado, com totais e memória de cálculo."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "src/main/java/.../SimplesNacionalControllerOpenApi.java",
+        "note": "EXEMPLO_NFE"
+      }
+    },
+    {
+      "id": "nfse-basica",
+      "name": "NFS-e básica",
+      "description": "Serviço de construção civil (atividade 12) em NFS-e.",
+      "category": "basico",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "nfse-basica.json",
+      "explanation": "Baseado no exemplo oficial de NFS-e (tpDoc 91), com NBS 101011100, que existe na base atual. Uma NFS-e admite exatamente um item.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "CALCULADO"
+        ],
+        "summary": "Item calculado com alíquotas sem redistribuição do ISS."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "src/main/java/.../SimplesNacionalControllerOpenApi.java",
+        "note": "EXEMPLO_NFSE, com a NBS trocada por um código vigente na base."
+      }
+    },
+    {
+      "id": "fator-r",
+      "name": "Atividade sujeita ao Fator R",
+      "description": "Atividade 09, com Fator R e escolha entre anexos III e V.",
+      "category": "tratamento-diferenciado",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "fator-r.json",
+      "explanation": "A atividade 09 pode ser tributada pelo Anexo III ou V, conforme o Fator R. Com fatorR verdadeiro o motor aplica o Anexo III. O motor também avisa que a atividade não admite benefício municipal do ISS (tpBM).",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "CALCULADO"
+        ],
+        "summary": "Anexo III aplicado, com avisos sobre tpBM."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "contrato OpenAPI /api/api-docs",
+        "note": "Construído a partir do contrato e validado contra o motor real."
+      }
+    },
+    {
+      "id": "multiplos-itens",
+      "name": "Operação com múltiplos itens",
+      "description": "Três itens de atividades diferentes (anexos I e II).",
+      "category": "multiplos-itens",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "multiplos-itens.json",
+      "explanation": "Uma NF-e com três itens. O motor resolve a alíquota de cada item pelo anexo da atividade e totaliza.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "CALCULADO",
+          "CALCULADO",
+          "CALCULADO"
+        ],
+        "summary": "Três itens calculados e totais da operação."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "contrato OpenAPI /api/api-docs",
+        "note": "Construído a partir do contrato e validado contra o motor real."
+      }
+    },
+    {
+      "id": "erro-atividade",
+      "name": "Erro: atividade desconhecida",
+      "description": "Código de atividade que não existe na base.",
+      "category": "erro",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "erro-atividade.json",
+      "explanation": "O código 99 não existe. O motor responde 200, mas o item sai como NAO_CALCULADO com o motivo. Sempre confira o estadoItem de cada item.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "NAO_CALCULADO"
+        ],
+        "summary": "Item NAO_CALCULADO, motivo CATIVSN_DESCONHECIDO."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "contrato OpenAPI /api/api-docs",
+        "note": "Construído a partir do contrato e validado contra o motor real."
+      }
+    },
+    {
+      "id": "nfse-nbs-desconhecida",
+      "name": "Exemplo oficial de NFS-e (NBS desconhecida)",
+      "description": "O payload oficial de NFS-e, que usa uma NBS ausente na base atual.",
+      "category": "erro",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "nfse-nbs-desconhecida.json",
+      "explanation": "O exemplo oficial do Swagger usa a NBS 114051000, que a base atual não conhece. O resultado é INCONSISTENCIA_ENTRADA com o erro VSN-050.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "INCONSISTENCIA_ENTRADA"
+        ],
+        "summary": "Erro VSN-050 apontando #/itens/0/nbs."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "src/main/java/.../SimplesNacionalControllerOpenApi.java",
+        "note": "EXEMPLO_NFSE, sem alterações."
+      }
+    },
+    {
+      "id": "erro-global-nfse-dois-itens",
+      "name": "Erro global: NFS-e com dois itens",
+      "description": "Uma NFS-e admite um único item.",
+      "category": "erro",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/simples-nacional/nao-assistido",
+      "contentType": "application/json",
+      "payload": "erro-global-nfse-dois-itens.json",
+      "explanation": "Erros globais de validação rejeitam a operação inteira com HTTP 422 (application/problem+json).",
+      "expected": {
+        "status": 422,
+        "summary": "Operação rejeitada por validação global."
+      },
+      "source": {
+        "repository": "calculadora-rtc-simples-nacional",
+        "tag": "1.0.2",
+        "path": "contrato OpenAPI /api/api-docs",
+        "note": "Construído a partir do contrato e validado contra o motor real."
+      }
+    }
+  ]
+}

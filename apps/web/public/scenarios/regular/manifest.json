@@ -1,0 +1,254 @@
+{
+  "engine": "regular",
+  "basePath": "/api/regular",
+  "scenarios": [
+    {
+      "id": "basico",
+      "name": "Operação básica",
+      "description": "Uma mercadoria com tributação integral de CBS e IBS.",
+      "category": "basico",
+      "method": "POST",
+      "endpoint": "/calculadora/regime-geral",
+      "contentType": "application/json",
+      "payload": "basico.json",
+      "explanation": "Cálculo simples de CBS e IBS para um item (NCM 24021000, cClassTrib 000001) em 2026. Usa o campo obsoleto dataHoraEmissao, exatamente como no exemplo oficial.",
+      "expected": {
+        "status": 200,
+        "summary": "Retorna o cálculo do item com os grupos de CBS e IBS."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/entradas/calculoscorretos/Teste_000001_1.json",
+        "note": ""
+      }
+    },
+    {
+      "id": "cesta-basica",
+      "name": "Cesta básica com redução",
+      "description": "Arroz da cesta básica, com redução de alíquota.",
+      "category": "reducao-tributaria",
+      "method": "POST",
+      "endpoint": "/calculadora/regime-geral",
+      "contentType": "application/json",
+      "payload": "cesta-basica.json",
+      "explanation": "Item com cClassTrib 200003 (cesta básica nacional): o motor aplica redução de 100% nas alíquotas. A partir de 2027 as alíquotas nominais são obrigatórias, por isso o resultado vem simulado.",
+      "expected": {
+        "status": 200,
+        "summary": "CBS e IBS com redução de alíquota; dados simulados por usar alíquotas informadas."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Adaptado de docs/exemplos.md (itens da operação de exemplo)."
+      }
+    },
+    {
+      "id": "imposto-seletivo",
+      "name": "Operação com Imposto Seletivo",
+      "description": "Cigarros com IS ad valorem e ad rem, em 2027.",
+      "category": "imposto-seletivo",
+      "method": "POST",
+      "endpoint": "/calculadora/regime-geral",
+      "contentType": "application/json",
+      "payload": "imposto-seletivo.json",
+      "explanation": "Item sujeito ao Imposto Seletivo, informado junto com as alíquotas nominais. Mostra o grupo IS e o impacto na base de CBS/IBS.",
+      "expected": {
+        "status": 200,
+        "summary": "Resultado com grupos IS e IBSCBS."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/entradas/tpdoc/tpdoc_imposto_seletivo_2027.json",
+        "note": ""
+      }
+    },
+    {
+      "id": "educacao",
+      "name": "Serviço de educação",
+      "description": "Serviço de educação com redução de 60%.",
+      "category": "reducao-tributaria",
+      "method": "POST",
+      "endpoint": "/calculadora/regime-geral",
+      "contentType": "application/json",
+      "payload": "educacao.json",
+      "explanation": "Serviço identificado por NBS (122011200) com cClassTrib 200028, que reduz as alíquotas em 60%.",
+      "expected": {
+        "status": 200,
+        "summary": "CBS e IBS com redução de 60% na alíquota."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Adaptado de docs/exemplos.md (itens da operação de exemplo)."
+      }
+    },
+    {
+      "id": "erro-classificacao",
+      "name": "Erro proposital de classificação",
+      "description": "NCM não vinculada à classificação tributária informada.",
+      "category": "erro",
+      "method": "POST",
+      "endpoint": "/calculadora/regime-geral",
+      "contentType": "application/json",
+      "payload": "erro-classificacao.json",
+      "explanation": "A NCM 02013000 não está vinculada à cClassTrib 200035. No endpoint de cálculo a operação inteira é rejeitada.",
+      "expected": {
+        "status": 422,
+        "summary": "Operação rejeitada: NCM não vinculada à classificação (problem+json)."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Adaptado de docs/exemplos.md (itens da operação de exemplo)."
+      }
+    },
+    {
+      "id": "erro-classificacao-observabilidade",
+      "name": "Mesmo erro, com observabilidade",
+      "description": "O mesmo item inválido enviado ao endpoint de observabilidade.",
+      "category": "observabilidade",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/regime-geral",
+      "contentType": "application/json",
+      "payload": "erro-classificacao.json",
+      "explanation": "O endpoint de observabilidade responde 200 e marca o item com estadoItem INCONSISTENCIA_ENTRADA, em vez de rejeitar a operação.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "INCONSISTENCIA_ENTRADA"
+        ],
+        "summary": "Item com INCONSISTENCIA_ENTRADA e erro REG-011."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Adaptado de docs/exemplos.md (itens da operação de exemplo)."
+      }
+    },
+    {
+      "id": "observabilidade-quatro-itens",
+      "name": "Observabilidade com quatro itens",
+      "description": "Cesta básica, Imposto Seletivo, educação e um item com erro.",
+      "category": "observabilidade",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/regime-geral",
+      "contentType": "application/json",
+      "payload": "observabilidade-quatro-itens.json",
+      "explanation": "Exemplo oficial de observabilidade: cada item recebe seu estadoItem e a memória de cálculo. Os totais somam apenas os itens calculados.",
+      "expected": {
+        "status": 200,
+        "estadoItens": [
+          "CALCULO_SIMULADO",
+          "CALCULO_SIMULADO",
+          "CALCULO_SIMULADO",
+          "INCONSISTENCIA_ENTRADA"
+        ],
+        "summary": "Três itens simulados e um com inconsistência."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Adaptado de docs/exemplos.md (itens da operação de exemplo)."
+      }
+    },
+    {
+      "id": "observabilidade-seis-itens",
+      "name": "Observabilidade com seis itens",
+      "description": "Carga de teste oficial com itens válidos e inválidos.",
+      "category": "observabilidade",
+      "method": "POST",
+      "endpoint": "/calculadora/observabilidade/regime-geral",
+      "contentType": "application/json",
+      "payload": "observabilidade-seis-itens.json",
+      "explanation": "Arquivo de teste oficial com várias situações: valores negativos, CSTs diferentes, tributação regular e alíquotas nominais.",
+      "expected": {
+        "status": 200,
+        "summary": "Itens com estados distintos: três inconsistências, um não implementado, um calculado e um simulado.",
+        "estadoItens": [
+          "INCONSISTENCIA_ENTRADA",
+          "NAO_IMPLEMENTADO",
+          "INCONSISTENCIA_ENTRADA",
+          "INCONSISTENCIA_ENTRADA",
+          "CALCULADO",
+          "CALCULO_SIMULADO"
+        ]
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/entradas/calculoscorretos/observabilidade/entrada.json",
+        "note": ""
+      }
+    },
+    {
+      "id": "base-calculo-unificada",
+      "name": "Base de cálculo unificada (NF-e)",
+      "description": "Composição da base de cálculo a partir dos componentes da nota.",
+      "category": "consulta",
+      "method": "POST",
+      "endpoint": "/calculadora/base-calculo/base-calculo-unificada",
+      "contentType": "application/json",
+      "payload": "base-calculo-unificada.json",
+      "explanation": "Calcula baseRG, baseIS e baseSN a partir de vProd, frete, seguro, descontos e tributos.",
+      "expected": {
+        "status": 200,
+        "summary": "Bases e avisos sobre campos ignorados no ano informado."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "docs/exemplos.md",
+        "note": "Entrada base.json do exemplo."
+      }
+    },
+    {
+      "id": "xml-gerar",
+      "name": "Gerar XML tributário",
+      "description": "Gera o XML de NF-e a partir de um ROC.",
+      "category": "xml",
+      "method": "POST",
+      "endpoint": "/calculadora/xml/generate?tipo=nfe",
+      "contentType": "application/json",
+      "payload": "xml-gerar-roc.json",
+      "explanation": "Converte o resultado do cálculo (ROC) no trecho XML tributário do documento escolhido (tipo=nfe).",
+      "expected": {
+        "status": 200,
+        "summary": "XML do grupo tributário."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/entradas/xml/entrada.json",
+        "note": ""
+      }
+    },
+    {
+      "id": "xml-validar-nfse",
+      "name": "Validar XML de NFS-e",
+      "description": "Valida uma NFS-e oficial contra o XSD.",
+      "category": "xml",
+      "method": "POST",
+      "endpoint": "/calculadora/xml/validate?tipo=nfse&subtipo=nota",
+      "contentType": "application/xml",
+      "payload": "xml-validar-nfse.xml",
+      "explanation": "Valida o XML completo de uma NFS-e (com IBS/CBS) contra o schema do tipo nfse.",
+      "expected": {
+        "status": 200,
+        "summary": "true quando o XML é válido."
+      },
+      "source": {
+        "repository": "calculadora-rtc-regime-regular",
+        "tag": "1.7.2",
+        "path": "src/test/resources/xml/nfse/valido/nota/nfse_valido_com_IBSCBS.xml",
+        "note": ""
+      }
+    }
+  ]
+}
