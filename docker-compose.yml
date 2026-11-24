@@ -8,6 +8,9 @@ x-java-engine-env: &java-engine-env
   OTEL_SDK_DISABLED: "true"
   OTEL_TRACES_EXPORTER: none
   MANAGEMENT_TRACING_EXPORT_ENABLED: "false"
+  # Traefik's StripPrefix sends X-Forwarded-Prefix (/api/regular or /api/simples). With this
+  # strategy Spring uses it as the public context path, so Swagger UI builds correct URLs.
+  SERVER_FORWARD_HEADERS_STRATEGY: framework
 
 services:
   traefik:

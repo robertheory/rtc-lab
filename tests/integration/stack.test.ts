@@ -46,6 +46,15 @@ describe('stack startup and routing (real engines through Traefik)', () => {
     }
   });
 
+  it.each(['regular', 'simples'])('%s Swagger UI config and servers use the public prefix', async (engine) => {
+    const cfg = (await (await fetch(`${BASE}/api/${engine}/api-docs/swagger-config`)).json()) as { configUrl: string; url: string };
+    expect(cfg.configUrl).toBe(`/api/${engine}/api-docs/swagger-config`);
+    expect(cfg.url).toBe(`/api/${engine}/api-docs`);
+    const doc = (await (await fetch(`${BASE}/api/${engine}/api-docs`)).json()) as { servers: { url: string }[] };
+    expect(doc.servers[0].url).toMatch(new RegExp(`/api/${engine}$`));
+    expect((await fetch(`${BASE}/api/${engine}/swagger-ui/index.html`)).status).toBe(200);
+  });
+
   it('keeps engines.lock.json in sync with the pinned submodules', () => {
     const lock = JSON.parse(readFileSync(resolve(ROOT, 'apps/web/public/engines.lock.json'), 'utf8')) as Record<string, { commit: string }>;
     const status = execFileSync('git', ['submodule', 'status'], { cwd: ROOT, encoding: 'utf8' });

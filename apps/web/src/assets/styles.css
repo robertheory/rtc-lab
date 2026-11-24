@@ -70,12 +70,16 @@ body { background: var(--rtc-bg); overflow: hidden; }
   height: 100vh;
   display: grid;
   grid-template-columns: var(--rtc-sidebar-w) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
   transition: grid-template-columns 0.18s ease;
 }
 .rtc-shell[data-collapsed='true'] { grid-template-columns: var(--rtc-sidebar-w-collapsed) minmax(0, 1fr); }
 
-.rtc-sidebar { background: var(--rtc-primary); color: #e6ebf3; padding: 1rem 0.65rem; overflow-y: auto; overflow-x: hidden; min-height: 0; }
+.rtc-sidebar { background: var(--rtc-primary); color: #e6ebf3; padding: 1rem 0.65rem 0.5rem; overflow-y: auto; overflow-x: hidden; min-height: 0; display: flex; flex-direction: column; }
+.rtc-sidebar nav { flex: 1; }
+.rtc-collapse { width: 100%; border: 0; background: none; margin-top: 0.5rem; border-top: 1px solid var(--rtc-primary-80); border-radius: 0; padding-top: 0.6rem; text-align: left; }
+.rtc-collapse svg { transition: transform 0.18s ease; }
+.rtc-shell[data-collapsed='true'] .rtc-collapse svg { transform: rotate(180deg); }
 .rtc-brand { display: flex; align-items: center; gap: 0.65rem; color: #fff; text-decoration: none; margin-bottom: 1.25rem; padding: 0 0.2rem; white-space: nowrap; }
 .rtc-brand small { display: block; color: var(--rtc-primary-40); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
 /* Neutral project monogram. It deliberately does not resemble the RFB brand. */
@@ -110,8 +114,8 @@ body { background: var(--rtc-bg); overflow: hidden; }
 .rtc-page-head h1 { font-size: 1.25rem; margin: 0; color: var(--rtc-primary); }
 .rtc-page-head p { margin: 0; font-size: 0.85rem; color: var(--rtc-muted); }
 
-/* One thin line, full width, below sidebar and content. 12px is the minimum text size. */
-.rtc-disclaimer { grid-column: 1 / -1; background: #fff8e6; border-top: 1px solid #e6d29a; color: #4a3b0f; font-size: 0.75rem; line-height: 1.4; padding: 0.2rem 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* One thin centered line across the top. 12px is the minimum text size. */
+.rtc-disclaimer { grid-column: 1 / -1; text-align: center; background: #fff8e6; border-bottom: 1px solid #e6d29a; color: #4a3b0f; font-size: 0.75rem; line-height: 1.4; padding: 0.2rem 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .rtc-hero { background: linear-gradient(135deg, #00205b 0%, #334d7c 100%); color: #fff; border-radius: 0.9rem; padding: 1.75rem 2rem; }
 .rtc-hero .text-secondary { color: var(--rtc-primary-20) !important; }
@@ -223,6 +227,7 @@ body { background: var(--rtc-bg); overflow: hidden; }
   .rtc-sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: var(--rtc-sidebar-w); z-index: 30; transform: translateX(-100%); transition: transform 0.18s ease; }
   .rtc-sidebar.open { transform: none; box-shadow: 0 0 40px rgba(0, 0, 0, 0.35); }
   .rtc-shell[data-collapsed='true'] .rtc-nav-label, .rtc-shell[data-collapsed='true'] .rtc-nav-title, .rtc-shell[data-collapsed='true'] .rtc-brand-text { display: inline; }
+  .rtc-collapse { display: none; }
   .rtc-view { padding: 0.75rem; }
   .rtc-header { padding: 0 0.75rem; }
   .rtc-status { gap: 0.6rem; }
@@ -233,5 +238,5 @@ body { background: var(--rtc-bg); overflow: hidden; }
   .rtc-help { width: 1.75rem; height: 1.75rem; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .rtc-shell, .rtc-sidebar, .rtc-wb-split::before { transition: none; }
+  .rtc-shell, .rtc-sidebar, .rtc-wb-split::before, .rtc-collapse svg { transition: none; }
 }

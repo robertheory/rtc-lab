@@ -11,24 +11,29 @@ test('dashboard shows real availability and pinned versions for all engines', as
     await expect(page.locator(`[data-engine="${id}"] [data-health]`)).toHaveAttribute('data-health', 'up');
   }
   await expect(page.getByTestId('version-regular')).toContainText('1.7.2');
-  await expect(page.getByTestId('disclaimer')).toContainText('Não é um sistema oficial da Receita Federal');
+  await expect(page.getByTestId('disclaimer')).toContainText('não oficial da Receita Federal');
 });
 
-test('footer is a thin single line across the full width', async ({ page }) => {
+test('disclaimer is a thin centered line across the top', async ({ page }) => {
   await page.goto('/#/regular');
-  const footer = page.getByTestId('disclaimer');
-  const box = await footer.boundingBox();
+  const banner = page.getByTestId('disclaimer');
+  const box = (await banner.boundingBox())!;
   const viewport = page.viewportSize()!;
-  expect(box!.x).toBe(0);
-  expect(Math.round(box!.width)).toBe(viewport.width);
-  expect(box!.height).toBeLessThan(32);
-  expect(await footer.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe('nowrap');
-  expect(await footer.textContent()).toContain('devem ser utilizados apenas para fins de experimentação e aprendizado.');
-  expect(box!.y + box!.height).toBeCloseTo(viewport.height, 0);
+  expect(box.x).toBe(0);
+  expect(box.y).toBe(0);
+  expect(Math.round(box.width)).toBe(viewport.width);
+  expect(box.height).toBeLessThan(32);
+  expect(await banner.evaluate((el) => getComputedStyle(el).textAlign)).toBe('center');
+  expect(await banner.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe('nowrap');
+  expect(await banner.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+  expect(await banner.textContent()).toContain('Use só para experimentar e aprender.');
 });
 
-test('sidebar collapses to icons and remembers the choice', async ({ page }) => {
+test('sidebar collapses to icons from a button pinned to its bottom and remembers the choice', async ({ page }) => {
   await page.goto('/');
+  const sb = (await page.locator('.rtc-sidebar').boundingBox())!;
+  const tg = (await page.getByTestId('sidebar-toggle').boundingBox())!;
+  expect(tg.y + tg.height).toBeGreaterThan(sb.y + sb.height - 60);
   const shell = page.locator('.rtc-shell');
   const before = (await page.locator('.rtc-sidebar').boundingBox())!.width;
   await page.getByTestId('sidebar-toggle').click();

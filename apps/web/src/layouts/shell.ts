@@ -4,14 +4,14 @@ import { getPref, setPref } from '../services/uiPrefs';
 import { h } from '../utils/dom';
 import { ROUTES } from '../pages/routes';
 
-export const DISCLAIMER =
-  'RTC Lab é um projeto independente de demonstração. Não é um sistema oficial da Receita Federal. Os cálculos são realizados pelos motores open source disponibilizados pela Receita Federal e devem ser utilizados apenas para fins de experimentação e aprendizado.';
+export const DISCLAIMER = 'Projeto independente, não oficial da Receita Federal. Cálculos dos motores open source oficiais. Use só para experimentar e aprender.';
 
 export interface Shell {
   view: HTMLElement;
   setActive(path: string): void;
 }
 
+const COLLAPSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 7-5 5 5 5M18 7l-5 5 5 5"/></svg>';
 const MENU_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
 
 function icon(svg: string): HTMLElement {
@@ -21,7 +21,7 @@ function icon(svg: string): HTMLElement {
   return span;
 }
 
-/** Collapsible sidebar + header + main area, with the disclaimer as a thin full-width footer. */
+/** Collapsible sidebar + header + main area, with the disclaimer as a thin centered banner on top. */
 export function buildShell(app: HTMLElement): Shell {
   const links = new Map<string, HTMLElement>();
   const navGroup = (title: string | null, group: string) => [
@@ -40,12 +40,16 @@ export function buildShell(app: HTMLElement): Shell {
 
   const shellEl = h('div', { class: 'rtc-shell', 'data-collapsed': String(getPref('sidebar-collapsed', false)) });
 
-  const collapseBtn = h('button', { type: 'button', class: 'rtc-icon-btn d-none d-lg-inline-grid', 'data-testid': 'sidebar-toggle' }, icon(MENU_ICON));
+  // Collapse/expand control pinned to the bottom of the sidebar.
+  const collapseLabel = h('span', { class: 'rtc-nav-label' });
+  const collapseBtn = h('button', { type: 'button', class: 'rtc-nav-link rtc-collapse', 'data-testid': 'sidebar-toggle' }, icon(COLLAPSE_ICON), collapseLabel);
+  sidebar.appendChild(collapseBtn);
   const syncCollapse = () => {
     const collapsed = shellEl.dataset.collapsed === 'true';
     collapseBtn.setAttribute('aria-expanded', String(!collapsed));
-    collapseBtn.setAttribute('aria-label', collapsed ? 'Expandir menu lateral' : 'Recolher menu lateral');
-    collapseBtn.title = collapsed ? 'Expandir menu' : 'Recolher menu';
+    collapseBtn.setAttribute('aria-label', collapsed ? 'Expandir menu' : 'Recolher menu');
+    collapseBtn.title = collapsed ? 'Expandir' : 'Recolher';
+    collapseLabel.textContent = collapsed ? 'Expandir' : 'Recolher';
   };
   collapseBtn.addEventListener('click', () => {
     const next = shellEl.dataset.collapsed !== 'true';
@@ -57,14 +61,14 @@ export function buildShell(app: HTMLElement): Shell {
 
   const menuBtn = h('button', { type: 'button', class: 'rtc-icon-btn d-lg-none', 'aria-label': 'Abrir menu', 'aria-controls': 'rtc-sidebar', onClick: () => sidebar.classList.toggle('open') }, icon(MENU_ICON));
   const header = h('header', { class: 'rtc-header' },
-    menuBtn, collapseBtn,
+    menuBtn,
     h('div', { class: 'rtc-header-title' }, h('strong', null, 'RTC Lab'), h('span', { class: 'd-none d-md-inline text-secondary' }, ' · laboratório dos motores da Reforma Tributária do Consumo')),
     h('div', { class: 'rtc-status', 'aria-label': 'Disponibilidade dos motores' }, ...ENGINE_IDS.map((id) => h('span', { class: 'rtc-status-item' }, dots.get(id)!, ENGINES[id].short))));
 
   const view = h('main', { class: 'rtc-view', id: 'view' });
-  const footer = h('footer', { class: 'rtc-disclaimer', role: 'note', title: DISCLAIMER, 'data-testid': 'disclaimer' }, DISCLAIMER);
+  const banner = h('div', { class: 'rtc-disclaimer', role: 'note', title: DISCLAIMER, 'data-testid': 'disclaimer' }, DISCLAIMER);
 
-  shellEl.append(sidebar, h('div', { class: 'rtc-main' }, header, view), footer);
+  shellEl.append(banner, sidebar, h('div', { class: 'rtc-main' }, header, view));
   app.append(shellEl);
   sidebar.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) sidebar.classList.remove('open');

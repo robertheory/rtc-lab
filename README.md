@@ -178,7 +178,7 @@ Após a inicialização, os serviços ficam disponíveis nos endereços abaixo. 
 | Motor | Base | OpenAPI (JSON) | Swagger UI | Saúde |
 |---|---|---|---|---|
 | Regime Regular | http://localhost/api/regular | [`/api/regular/api-docs`](http://localhost/api/regular/api-docs) | [`/api/regular/swagger-ui/index.html`](http://localhost/api/regular/swagger-ui/index.html) | [`/health/regular`](http://localhost/health/regular) |
-| Simples Nacional | http://localhost/api/simples | [`/api/simples/api-docs`](http://localhost/api/simples/api-docs) | `/api/simples/swagger-ui/index.html` | [`/health/simples`](http://localhost/health/simples) |
+| Simples Nacional | http://localhost/api/simples | [`/api/simples/api-docs`](http://localhost/api/simples/api-docs) | [`/api/simples/swagger-ui/index.html`](http://localhost/api/simples/swagger-ui/index.html) | [`/health/simples`](http://localhost/health/simples) |
 | Gerador DANFSe | http://localhost/api/danfse | `api/swagger/swagger.yaml` (repositório) | [`/api/danfse/api/swagger-ui/index.html`](http://localhost/api/danfse/api/swagger-ui/index.html) | [`/api/danfse/health/ready`](http://localhost/api/danfse/health/ready) |
 
 Exemplos de chamadas diretas pelo Traefik:
@@ -195,6 +195,8 @@ curl -s http://localhost/api/simples/versao
 curl -s -X POST --data-binary @apps/web/public/scenarios/danfse/payloads/nfse-simples.xml \
   -H 'Content-Type: application/xml' 'http://localhost/api/danfse?stc=0&canhoto=true' -o danfse.pdf
 ```
+
+A Swagger UI dos motores Java depende do cabeçalho `X-Forwarded-Prefix`, enviado pelo `StripPrefix` do Traefik, e de `SERVER_FORWARD_HEADERS_STRATEGY=framework` (definido no `docker-compose.yml`). Isso faz o Spring publicar as URLs de configuração e de "Try it out" sob `/api/regular` e `/api/simples`.
 
 ### Roteamento (resumo)
 
