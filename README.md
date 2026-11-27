@@ -82,7 +82,7 @@ sequenceDiagram
     C->>M: inicia após service_completed_successfully
     M->>V: abre o SQLite em modo somente leitura
     M-->>C: healthcheck (actuator) UP
-    C->>T: inicia; roteia apenas containers saudáveis
+    C->>T: inicia e roteia apenas containers saudáveis
 ```
 
 Decisões de projeto detalhadas, com os achados da análise dos três repositórios, estão em [docs/pesquisa-tecnica.md](docs/pesquisa-tecnica.md).
